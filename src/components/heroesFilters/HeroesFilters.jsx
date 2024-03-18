@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { changeActiveFilter } from "../../actions/index.js";
+import { changeActiveFilter } from "./filtersSlice.js";
 import classnames from 'classnames'
 
 const HeroesFilters = () => {

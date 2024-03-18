@@ -2,11 +2,12 @@ import { useHttp } from '../../hooks/http.hook';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { fetchHeroes, heroesFetchingError, heroesDeleted } from '../../actions';
+import { heroesFetchingError, heroesDeleted } from './heroesSlice.js';
+import { fetchHeroes } from '../../actions/index.js'
 import HeroesListItem from "../heroesListItem/HeroesListItem.jsx";
 import Spinner from '../spinner/Spinner.jsx';
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import { createSelector } from "reselect";
+import { createSelector } from "@reduxjs/toolkit";
 
 import './heroesList.scss'
 

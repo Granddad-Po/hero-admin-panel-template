@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { useHttp } from "../../hooks/http.hook.js";
 import { useDispatch, useSelector } from "react-redux";
-import { heroesCreated, heroesFetchingError } from "../../actions/index.js";
+import { heroesCreated, heroesFetchingError } from "../heroesList/heroesSlice.js";
 
 // Задача для этого компонента:
 // Реализовать создание нового героя с введенными данными. Он должен попадать
