@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { useHttp } from "../../hooks/http.hook.js";
 import { useDispatch, useSelector } from "react-redux";
-import { heroesCreate, heroesFetched, heroesFetching, heroesFetchingError } from "../../actions/index.js";
+import { heroesCreated, heroesFetchingError } from "../../actions/index.js";
 
 // Задача для этого компонента:
 // Реализовать создание нового героя с введенными данными. Он должен попадать
@@ -18,12 +18,12 @@ const HeroesAddForm = () => {
     const {requestAddHero} = useHttp()
 	const {register, handleSubmit} = useForm()
     const dispatch = useDispatch()
-    const filters = useSelector(state => state.filters)
+    const filters = useSelector(({filters}) => filters.filters)
 
     const onSubmit = (data) => {
         const hero = JSON.stringify({name: data.name, description: data.text, element: data.element})
         requestAddHero(hero)
-            .then((data) => dispatch(heroesCreate(data)))
+            .then((data) => dispatch(heroesCreated(data)))
             .catch(() => dispatch(heroesFetchingError()))
     }
 

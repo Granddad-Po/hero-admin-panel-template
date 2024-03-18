@@ -4,24 +4,31 @@ const _apiUrl = 'https://65f0508bda8c6584131b69b7.mockapi.io/api'
 
 export const useHttp = () => {
 
-	const requestAll = useCallback(async (method = 'GET', headers = {'Content-Type': 'application/json'}) => {
+	const requestHeroes = useCallback(async (method = 'GET', headers = {'Content-Type': 'application/json'}) => {
 
 		try {
 			const responseHeroes = await fetch(`${_apiUrl}/hero`, {method, headers});
-			const responseFilters = await fetch(`${_apiUrl}/filter`, {method, headers});
 
-			if (!responseHeroes.ok || !responseFilters.ok) {
+			if (!responseHeroes.ok) {
 				throw new Error(`Oops! Something went wrong when trying to request`);
 			}
 
-			const dataHeroes = await responseHeroes.json();
-			const dataFilters = await responseFilters.json();
+			return await responseHeroes.json();
+		} catch (e) {
+			throw e;
+		}
+	}, []);
 
-            const data = {
-                heroes: dataHeroes,
-                filters: dataFilters
-            }
-			return data;
+	const requestFilters = useCallback(async (method = 'GET', headers = {'Content-Type': 'application/json'}) => {
+
+		try {
+			const responseFilters = await fetch(`${_apiUrl}/filter`, {method, headers});
+
+			if (!responseFilters.ok) {
+				throw new Error(`Oops! Something went wrong when trying to request`);
+			}
+
+			return await responseFilters.json();
 		} catch (e) {
 			throw e;
 		}
@@ -44,9 +51,7 @@ export const useHttp = () => {
 				throw new Error(`Could not fetch ${`${_apiUrl}/hero`}, status: ${response.status}`);
 			}
 
-			const data = await response.json();
-
-			return data;
+			return await response.json();
 		} catch (e) {
 			throw e;
 		}
@@ -68,9 +73,7 @@ export const useHttp = () => {
 				throw new Error(`Could not fetch ${_apiUrl}, status: ${response.status}`);
 			}
 
-			const data = await response.json();
-
-			return data;
+			return await response.json();
 		} catch (e) {
 			throw e;
 		}
@@ -78,7 +81,8 @@ export const useHttp = () => {
 
 
 	return {
-		requestAll,
+		requestHeroes,
+		requestFilters,
 		requestAddHero,
 		requestDeleteHero
 	}

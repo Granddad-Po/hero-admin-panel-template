@@ -2,39 +2,45 @@ import { useHttp } from '../../hooks/http.hook';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { heroesFetching, heroesFetched, heroesFetchingError, heroesDelete } from '../../actions';
+import { fetchHeroes, heroesFetchingError, heroesDeleted } from '../../actions';
 import HeroesListItem from "../heroesListItem/HeroesListItem.jsx";
 import Spinner from '../spinner/Spinner.jsx';
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { createSelector } from "reselect";
 
 import './heroesList.scss'
 
-// Задача для этого компонента:
-// При клике на "крестик" идет удаление персонажа из общего состояния
-// Усложненная задача:
-// Удаление идет и с json файла при помощи метода DELETE
 
 const HeroesList = () => {
 
-	const filteredHeroes = useSelector(state => state.filteredHeroes)
-	const heroesLoadingStatus = useSelector(state => state.heroesLoadingStatus)
+	const filteredHeroesSelector = createSelector(
+		(state) => state.heroes.heroes,
+		(state) => state.filters.activeFilter,
+		(heroes, filter) => {
+			if (filter === 'all') {
+				return heroes
+			} else {
+				return heroes.filter(hero => hero.element === filter)
+			}
+		}
+	)
+
+	const filteredHeroes = useSelector(filteredHeroesSelector)
+	const heroesLoadingStatus = useSelector(({heroes}) => heroes.heroesLoadingStatus)
 
 	const dispatch = useDispatch();
-	const {requestAll, requestDeleteHero} = useHttp();
+	const {requestHeroes, requestFilters, requestDeleteHero} = useHttp();
 
 	useEffect(() => {
 		return () => {
-			dispatch(heroesFetching());
-			requestAll()
-				.then((data) => dispatch(heroesFetched(data)))
-				.catch(() => dispatch(heroesFetchingError()))
+			dispatch(fetchHeroes(requestHeroes, requestFilters))
 		}
 		// eslint-disable-next-line
 	}, []);
 
 	const deleteHero = async (id) => {
 		await requestDeleteHero(id)
-			.then(() => dispatch(heroesDelete(id)))
+			.then(() => dispatch(heroesDeleted(id)))
 			.catch(() => dispatch(heroesFetchingError()))
 	}
 
