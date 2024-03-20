@@ -1,15 +1,14 @@
-import { useHttp } from '../../hooks/http.hook';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { heroesFetchingError, heroesDeleted } from './heroesSlice.js';
-import { fetchHeroes } from '../../actions/index.js'
+import { fetchHeroes, fetchDeleteHeroes } from './heroesSlice.js';
 import HeroesListItem from "../heroesListItem/HeroesListItem.jsx";
 import Spinner from '../spinner/Spinner.jsx';
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { createSelector } from "@reduxjs/toolkit";
 
 import './heroesList.scss'
+import { fetchFilters } from "../heroesFilters/filtersSlice.js";
 
 
 const HeroesList = () => {
@@ -30,19 +29,17 @@ const HeroesList = () => {
 	const heroesLoadingStatus = useSelector(({heroes}) => heroes.heroesLoadingStatus)
 
 	const dispatch = useDispatch();
-	const {requestHeroes, requestFilters, requestDeleteHero} = useHttp();
 
 	useEffect(() => {
 		return () => {
-			dispatch(fetchHeroes(requestHeroes, requestFilters))
+			dispatch(fetchHeroes())
+			dispatch(fetchFilters())
 		}
 		// eslint-disable-next-line
 	}, []);
 
-	const deleteHero = async (id) => {
-		await requestDeleteHero(id)
-			.then(() => dispatch(heroesDeleted(id)))
-			.catch(() => dispatch(heroesFetchingError()))
+	const deleteHero = (id) => {
+		dispatch(fetchDeleteHeroes(id))
 	}
 
 	if (heroesLoadingStatus === "loading") {
@@ -64,7 +61,7 @@ const HeroesList = () => {
 		return arr.map((props) => {
 			return (
 				<CSSTransition key={props.id} timeout={500} classNames="hero">
-					<HeroesListItem {...props} deleteHero={deleteHero} />
+					<HeroesListItem {...props} deleteHero={() => deleteHero(props.id)} />
 				</CSSTransition>
 			)
 		})

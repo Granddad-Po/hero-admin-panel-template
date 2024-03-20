@@ -1,10 +1,8 @@
-import { useCallback } from "react";
-
 const _apiUrl = 'https://65f0508bda8c6584131b69b7.mockapi.io/api'
 
 export const useHttp = () => {
 
-	const requestHeroes = useCallback(async (method = 'GET', headers = {'Content-Type': 'application/json'}) => {
+	const requestHeroes = async (method = 'GET', headers = {'Content-Type': 'application/json'}) => {
 
 		try {
 			const responseHeroes = await fetch(`${_apiUrl}/hero`, {method, headers});
@@ -17,9 +15,9 @@ export const useHttp = () => {
 		} catch (e) {
 			throw e;
 		}
-	}, []);
+	};
 
-	const requestFilters = useCallback(async (method = 'GET', headers = {'Content-Type': 'application/json'}) => {
+	const requestFilters = async (method = 'GET', headers = {'Content-Type': 'application/json'}) => {
 
 		try {
 			const responseFilters = await fetch(`${_apiUrl}/filter`, {method, headers});
@@ -32,9 +30,9 @@ export const useHttp = () => {
 		} catch (e) {
 			throw e;
 		}
-	}, []);
+	};
 
-	const requestAddHero = useCallback(async (body = null) => {
+	const requestAddHero = async (body = null) => {
 
 		if (body === null || Object.keys(body).length === 0) {
 			throw new Error('The body should not be empty')
@@ -55,9 +53,9 @@ export const useHttp = () => {
 		} catch (e) {
 			throw e;
 		}
-	}, []);
+	};
 
-	const requestDeleteHero = useCallback(async (id = null) => {
+	const requestDeleteHero = async (id = null) => {
 
 		if (!id) {
 			throw new Error('You didn\'t specify an ID')
@@ -73,11 +71,12 @@ export const useHttp = () => {
 				throw new Error(`Could not fetch ${_apiUrl}, status: ${response.status}`);
 			}
 
-			return await response.json();
+			const result = await response.json();
+			return result.id
 		} catch (e) {
 			throw e;
 		}
-	}, []);
+	};
 
 
 	return {
