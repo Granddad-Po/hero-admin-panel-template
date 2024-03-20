@@ -29,9 +29,6 @@ const filtersSlice = createSlice({
 	},
 	extraReducers: builder => {
 		builder
-			.addCase(fetchFilters.pending, state => {
-				state.filtersLoadingStatus = 'loading'
-			})
 			.addCase(fetchFilters.fulfilled, (state, action) => {
 				state.filters = action.payload
 				state.filtersLoadingStatus = 'idle'

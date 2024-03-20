@@ -48,9 +48,7 @@ const heroesSlice = createSlice({
 				state.heroesLoadingStatus = 'error'
 			})
 
-			.addCase(fetchAddHeroes.pending, state => {
-				state.heroesLoadingStatus = 'loading'
-			})
+
 			.addCase(fetchAddHeroes.fulfilled, (state, action) => {
 				state.heroes.push(action.payload)
 				state.heroesLoadingStatus = 'idle'
@@ -59,9 +57,7 @@ const heroesSlice = createSlice({
 				state.heroesLoadingStatus = 'error'
 			})
 
-			.addCase(fetchDeleteHeroes.pending, (state, action) => {
-				state.heroesLoadingStatus = 'loading'
-			})
+
 			.addCase(fetchDeleteHeroes.fulfilled, (state, action) => {
 				console.log(action.payload)
 				state.heroes = state.heroes.filter(hero => hero.id !== action.payload)
