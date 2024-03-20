@@ -1,16 +1,22 @@
 import { useDispatch, useSelector } from "react-redux";
 import { changeActiveFilter } from "./filtersSlice.js";
 import classnames from 'classnames'
+import Spinner from "../spinner/Spinner.jsx";
 
 const HeroesFilters = () => {
 
 	const activeFilter = useSelector(({filters}) => filters.activeFilter)
 	const filters = useSelector(({filters}) => filters.filters)
+	const filtersLoadingStatus = useSelector(({filters}) => filters.filtersLoadingStatus)
 	const dispatch = useDispatch()
 
 	const renderItems = (arr) => {
 
-		if (arr.length === 0) {
+		if (filtersLoadingStatus === 'loading') {
+			return <Spinner />
+		}
+
+		if (filtersLoadingStatus === 'idle' && arr.length === 0) {
 			return <h5 className="text-center mt-5">Фильтры не найдены</h5>
 		}
 
