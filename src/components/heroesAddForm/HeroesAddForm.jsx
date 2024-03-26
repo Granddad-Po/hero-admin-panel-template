@@ -1,17 +1,32 @@
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAddHeroes } from "../heroesList/heroesSlice.js";
+import { useEffect } from "react";
 
 const HeroesAddForm = () => {
 
-	const {register, handleSubmit} = useForm()
+	const {
+		register,
+		handleSubmit,
+		reset,
+		formState
+	} = useForm()
 	const dispatch = useDispatch()
 	const filters = useSelector(({filters}) => filters.filters)
 
 	const onSubmit = (data) => {
 		const hero = JSON.stringify({name: data.name, description: data.text, element: data.element})
 		dispatch(fetchAddHeroes(hero))
+		if (formState.isSubmitSuccessful) {
+			reset()
+		}
 	}
+
+	useEffect(() => {
+		if (formState.isSubmitSuccessful) {
+			reset()
+		}
+	}, [formState]);
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)} className="border p-4 shadow-lg rounded">
