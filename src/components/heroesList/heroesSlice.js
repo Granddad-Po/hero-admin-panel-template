@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 import { useHttp } from '../../hooks/http.hook.js'
 
 const initialState = {
@@ -72,5 +72,18 @@ const heroesSlice = createSlice({
 })
 
 const {reducer, actions} = heroesSlice
+
+const selectHeroes = state => state.heroes.heroes
+const selectActiveFilter = state => state.filters.activeFilter
+
+export const selectFilteredHeroes = createSelector(
+	selectHeroes,
+	selectActiveFilter,
+	(heroes, filter) => {
+		return filter === 'all'
+			? heroes
+			: heroes.filter(hero => hero.element === filter)
+	}
+)
 
 export default reducer
