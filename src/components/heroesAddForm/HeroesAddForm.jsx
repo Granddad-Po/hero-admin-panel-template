@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAddHeroes } from "../heroesList/heroesSlice.js";
 import { useEffect } from "react";
+import { selectAll } from "../heroesFilters/filtersSlice.js";
 
 const HeroesAddForm = () => {
 
@@ -12,7 +13,7 @@ const HeroesAddForm = () => {
 		formState
 	} = useForm()
 	const dispatch = useDispatch()
-	const filters = useSelector(({filters}) => filters.filters)
+	const filters = useSelector(selectAll)
 
 	const onSubmit = (data) => {
 		const hero = JSON.stringify({name: data.name, description: data.text, element: data.element})

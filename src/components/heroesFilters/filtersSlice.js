@@ -1,12 +1,8 @@
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit'
 import { useHttp } from "../../hooks/http.hook.js";
 
 
-const initialState = {
-	filters: [],
-	filtersLoadingStatus: 'idle',
-	activeFilter: 'all'
-}
+const filtersAdapter = createEntityAdapter()
 
 export const fetchFilters = createAsyncThunk(
 	'fetch/fetchFilters',
@@ -18,7 +14,7 @@ export const fetchFilters = createAsyncThunk(
 
 const filtersSlice = createSlice({
 	name: 'filters',
-	initialState,
+	initialState: filtersAdapter.getInitialState({filtersLoadingStatus: 'idle', activeFilter: 'all'}),
 	reducers: {
 		changeActiveFilter: (state, action) => {
 			state.activeFilter = action.payload
@@ -30,7 +26,7 @@ const filtersSlice = createSlice({
 				state.filtersLoadingStatus = 'loading'
 			})
 			.addCase(fetchFilters.fulfilled, (state, action) => {
-				state.filters = action.payload
+				filtersAdapter.setAll(state, action.payload)
 				state.filtersLoadingStatus = 'idle'
 				state.activeFilter = 'all'
 			})
@@ -44,12 +40,9 @@ const {reducer, actions} = filtersSlice
 
 export default reducer
 
-const selectFilters = state => state.filters
-
-export const selectFiltersState = createSelector(
-	selectFilters,
-	filtersState => filtersState
-)
+export const {selectAll} = filtersAdapter.getSelectors(state => state.filters)
+export const selectActiveFilter = state => state.filters.activeFilter
+export const selectFiltersLoadingStatus = state => state.filters.filtersLoadingStatus
 
 export const {
 	changeActiveFilter

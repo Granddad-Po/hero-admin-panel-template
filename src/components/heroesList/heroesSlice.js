@@ -1,10 +1,8 @@
-import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSelector, createSlice, createEntityAdapter } from "@reduxjs/toolkit";
 import { useHttp } from '../../hooks/http.hook.js'
 
-const initialState = {
-	heroes: [],
-	heroesLoadingStatus: 'idle',
-}
+
+const heroesAdapter = createEntityAdapter()
 
 export const fetchHeroes = createAsyncThunk(
 	'heroes/fetchHeroes',
@@ -34,14 +32,14 @@ export const fetchDeleteHeroes = createAsyncThunk(
 
 const heroesSlice = createSlice({
 	name: 'heroes',
-	initialState,
+	initialState: heroesAdapter.getInitialState({heroesLoadingStatus: 'idle'}),
 	extraReducers: builder => {
 		builder
 			.addCase(fetchHeroes.pending, state => {
 				state.heroesLoadingStatus = 'loading'
 			})
 			.addCase(fetchHeroes.fulfilled, (state, action) => {
-				state.heroes = action.payload
+				heroesAdapter.setAll(state, action.payload)
 				state.heroesLoadingStatus = 'idle'
 			})
 			.addCase(fetchHeroes.rejected, state => {
@@ -50,7 +48,7 @@ const heroesSlice = createSlice({
 
 
 			.addCase(fetchAddHeroes.fulfilled, (state, action) => {
-				state.heroes.push(action.payload)
+				heroesAdapter.addOne(state, action.payload)
 				state.heroesLoadingStatus = 'idle'
 			})
 			.addCase(fetchAddHeroes.rejected, state => {
@@ -59,8 +57,7 @@ const heroesSlice = createSlice({
 
 
 			.addCase(fetchDeleteHeroes.fulfilled, (state, action) => {
-				console.log(action.payload)
-				state.heroes = state.heroes.filter(hero => hero.id !== action.payload)
+				heroesAdapter.removeOne(state, action.payload)
 				state.heroesLoadingStatus = 'idle'
 			})
 			.addCase(fetchDeleteHeroes.rejected, state => {
@@ -73,11 +70,11 @@ const heroesSlice = createSlice({
 
 const {reducer, actions} = heroesSlice
 
-const selectHeroes = state => state.heroes.heroes
+const {selectAll} = heroesAdapter.getSelectors(state => state.heroes)
 const selectActiveFilter = state => state.filters.activeFilter
 
 export const selectFilteredHeroes = createSelector(
-	selectHeroes,
+	selectAll,
 	selectActiveFilter,
 	(heroes, filter) => {
 		return filter === 'all'
