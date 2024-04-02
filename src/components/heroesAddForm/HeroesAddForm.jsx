@@ -1,8 +1,6 @@
 import { useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from "react-redux";
-import { fetchAddHeroes } from "../heroesList/heroesSlice.js";
 import { useEffect } from "react";
-import { selectAll } from "../heroesFilters/filtersSlice.js";
+import { useCreateHeroMutation, useGetFiltersQuery } from "../../api/apiSlice.js";
 
 const HeroesAddForm = () => {
 
@@ -12,12 +10,12 @@ const HeroesAddForm = () => {
 		reset,
 		formState
 	} = useForm()
-	const dispatch = useDispatch()
-	const filters = useSelector(selectAll)
+	const [createHero] = useCreateHeroMutation()
+	const {data: filters = []} = useGetFiltersQuery()
 
 	const onSubmit = (data) => {
-		const hero = JSON.stringify({name: data.name, description: data.text, element: data.element})
-		dispatch(fetchAddHeroes(hero))
+		const hero = {name: data.name, description: data.text, element: data.element}
+		createHero(hero).unwrap()
 		if (formState.isSubmitSuccessful) {
 			reset()
 		}

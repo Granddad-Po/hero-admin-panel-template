@@ -1,44 +1,41 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
-import { fetchHeroes, fetchDeleteHeroes, selectFilteredHeroes } from './heroesSlice.js';
 import HeroesListItem from "../heroesListItem/HeroesListItem.jsx";
 import Spinner from '../spinner/Spinner.jsx';
 import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { useDeleteHeroMutation, useGetHeroesQuery } from "../../api/apiSlice.js";
 
 import './heroesList.scss'
-import { fetchFilters } from "../heroesFilters/filtersSlice.js";
 
 
 const HeroesList = () => {
 
-	const filteredHeroes = useSelector(selectFilteredHeroes)
-	const heroesLoadingStatus = useSelector(({heroes}) => heroes.heroesLoadingStatus)
+	const {data: heroes = [], isLoading, isError} = useGetHeroesQuery()
+	const [deleteHeroById] = useDeleteHeroMutation()
+	const activeFilter = useSelector(state => state.filters.activeFilter)
 
-	const dispatch = useDispatch();
 
-	useEffect(() => {
-		return () => {
-			dispatch(fetchHeroes())
-			dispatch(fetchFilters())
-		}
-		// eslint-disable-next-line
-	}, []);
+	const filteredHeroes = useMemo(() => {
+		return activeFilter === 'all'
+			? heroes
+			: heroes.filter(hero => hero.element === activeFilter)
+	}, [heroes, activeFilter])
 
 	const deleteHero = (id) => {
-		dispatch(fetchDeleteHeroes(id))
+		deleteHeroById(id)
 	}
 
-	if (heroesLoadingStatus === "loading") {
+	if (isLoading) {
 		return <Spinner />;
-	} else if (heroesLoadingStatus === "error") {
+	} else if (isError) {
 		return <h5 className="text-center mt-5">Ошибка загрузки</h5>
 	}
 
 	const renderHeroesList = (arr) => {
 		if (arr.length === 0) {
 			return (
-				<CSSTransition timeout={500} classNames="hero">
+				<CSSTransition timeout={0} classNames="hero">
 					<h5 className="text-center mt-5">Героев пока нет</h5>
 				</CSSTransition>
 
